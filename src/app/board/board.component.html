@@ -1,0 +1,27 @@
+<div class="board">
+    <div class="intro">
+        <h2>Chess Bot</h2>
+        <p>This bot tries to imitate my brain. Try if you can beat it.</p>
+    </div>
+    <div *ngFor="let r of createRange(); let i=index" class="row">
+        <div
+            *ngFor="let r of createRange(); let j = index"
+            class="square"
+            [ngStyle]="{ 'background-color': getCellColor(i, j) }"
+            (dragover)="onDragOverSquare($event, 'hovered-square')"
+            (dragenter)="onDragEnterSquare($event, 'hovered-square')"
+            (dragleave)="onDragLeaveSquare($event, 'hovered-square')"
+            (drop)="onDropSquare($event)"
+        >
+            <div class="row-pos-text">{{ getRowText(i, j) }}</div>
+            <div class="piece"
+                draggable="true" 
+                (dragstart)="onDragStart($event, '', 'invisible-piece')"
+                (dragend)="onDragEnd($event, '', 'invisible-piece')"
+            >
+                {{ getPiece(i, j) }}
+            </div>
+            <div class="column-pos-text">{{ getColumnText(i, j) }}</div>
+        </div>
+    </div>
+</div>

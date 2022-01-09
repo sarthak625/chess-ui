@@ -1,0 +1,62 @@
+@import "src/utilities/variables";
+
+.board {
+    user-select: none;
+    font-family: 'Be Vietnam Pro', sans-serif;
+    .intro {
+        display: flex;
+        justify-content: space-around;
+        flex-direction: column;
+        align-items: center;
+        h2 {
+            text-decoration: underline;
+        }
+    }
+    .row {
+        border-spacing: 0;
+        display: flex;
+        justify-content: center;
+        .square {
+            width: 80px;
+            height: 80px;
+            border: 1px solid $cell-border-background;
+            display: flex;
+            position: relative;
+            min-width: 0;
+            &.selected-square {
+                border: 1px solid #edbb2f;
+                box-shadow: 0 0 10px #edbb2f;
+            }
+            &.hovered-square {
+                border: 1px solid #5aad11;
+                box-shadow: 0 0 10px #5aad11;
+            }
+            .piece {
+                font-size: 3.5rem;
+                text-align: center;
+                position: absolute;
+                left: 26%;
+                top: 5%;
+                cursor: pointer;
+                // &.invisible-piece {
+                //     display: none;
+                // }
+            }
+            .column-pos-text {
+                font-size: 0.7rem;
+                position: absolute;
+                right: 8%;
+                top: 80%;
+            }
+            .row-pos-text {
+                font-size: 0.7rem;
+                position: absolute;
+                left: 4%;
+                top: 5%;
+            }
+            .highlight {
+                border: 1px solid green;
+            }
+        }
+    }
+}
