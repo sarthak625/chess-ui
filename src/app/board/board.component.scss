@@ -1,8 +1,24 @@
 @import "src/utilities/variables";
 
+.not-supported {
+    display: none;
+    .intro {
+        display: flex;
+        justify-content: space-around;
+        flex-direction: column;
+        align-items: center;
+        h2 {
+            text-decoration: underline;
+        }
+    }
+}
+
+audio {
+    display: none;
+}
+
 .board {
     user-select: none;
-    font-family: 'Be Vietnam Pro', sans-serif;
     .intro {
         display: flex;
         justify-content: space-around;
@@ -38,9 +54,9 @@
                 left: 26%;
                 top: 5%;
                 cursor: pointer;
-                // &.invisible-piece {
-                //     display: none;
-                // }
+                &.white {
+                    text-shadow: 1px 1px #d5dde8;
+                }
             }
             .column-pos-text {
                 font-size: 0.7rem;
@@ -58,5 +74,36 @@
                 border: 1px solid green;
             }
         }
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .board {
+        .row {
+            .square {
+                width: 40px;
+                height: 40px;
+                .piece {
+                    font-size: 2rem;
+                    left: 28%;
+                    top: 0%;
+                }
+                .column-pos-text {
+                    font-size: 0.4rem;
+                }
+                .row-pos-text {
+                    font-size: 0.4rem;
+                }
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: 220px) {
+    .board {
+        display: none;
+    }
+    .not-supported {
+        display: block;
     }
 }

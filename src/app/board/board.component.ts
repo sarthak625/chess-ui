@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, OnInit, ElementRef, ViewChild, Renderer2 } from '@angular/core';
 
 import { ChessbrainService } from '../services/chessbrain.service';
+import { MusicService } from '../services/music.service';
 
 @Component({
   selector: 'app-board',
@@ -9,30 +10,6 @@ import { ChessbrainService } from '../services/chessbrain.service';
 })
 export class BoardComponent implements OnInit, AfterViewInit {
   n = 8;
-  white = {
-    king: "♔",
-    queen: "♕",
-    rook: "♖",
-    bishop: "♗",
-    knight: "♘",
-    pawn: "♙",
-  };
-
-  black = {
-    king: "♚",
-    queen: "♛",
-    rook: "♜",
-    bishop: "♝",
-    knight: "♞",
-    pawn: "♟",
-  };
-
-  others = {
-    prince: "🤴",
-    emoji: "👑",
-    princess: "👸",
-    horse: "🐴",
-  };
 
   startFenString = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
   currentMoveSet: any = {};
@@ -41,12 +18,14 @@ export class BoardComponent implements OnInit, AfterViewInit {
 
   constructor(
     private chessBrainService: ChessbrainService,
+    private musicService: MusicService,
     private elementRef:ElementRef,
     private renderer: Renderer2,
   ) { }
 
   ngOnInit(): void {
     this.currentMoveSet = this.chessBrainService.convertFenStringToMoveSet("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    console.log(this.chessBrainService.convertMoveSetToFenString(this.currentMoveSet.positions));
   }
 
   ngAfterViewInit() {
@@ -107,9 +86,64 @@ export class BoardComponent implements OnInit, AfterViewInit {
     });
   }
 
+  captureChildPiece(child: any, targetSquare: any): any {
+    if (!child) return {
+      proceedMoving: true,
+      isCaptured: false,
+    };
+    // Check if the piece is on the same team
+    const arePiecesOnSameTeam = this
+      .chessBrainService
+      .getIfPiecesOnTheSameTeam(
+        child.id,
+        this.selectedPiece.id,
+      );
+
+    if (arePiecesOnSameTeam) return {
+      proceedMoving: false,
+      isCaptured: false,
+    };
+    this.renderer.removeChild(targetSquare, child);
+    this.musicService.playPieceCapturedSound();
+    return {
+      proceedMoving: true,
+      isCaptured: true,
+    };
+  }
+
   onDropSquare(event: any) {
-    if (this.selectedPiece) {
-      this.renderer.appendChild(event.target, this.selectedPiece);
+    let targetSquare = event.target;
+    const targetSquareId = targetSquare.id;
+    const isDroppingToSquareOfOrigin = (event.target == this.selectedPiece) || (event.target == this.selectedPiece.parentNode);
+    if (!this.chessBrainService.isValidTargetSquareId(targetSquareId)) {
+      targetSquare = event.target.parentNode;
+    }
+    const pieceId = this.selectedPiece.id;
+    const originatedFromSquare = this.selectedPiece.parentNode;
+    const originatedFromSquareId = originatedFromSquare.id;
+    if (this.selectedPiece && !isDroppingToSquareOfOrigin) {
+      // Check if the targetSquare already has a piece
+      const children: any = Array.from(targetSquare.childNodes).filter((child: any) => {
+        return child.id;
+      });
+
+      // Capture piece if there is a child at this pos
+      // Check if the piece is on the same team
+      const isPieceOnMyTeam = true;
+
+      if (!isPieceOnMyTeam) {
+        // Throw illegal move sound
+        return;
+      }
+      const { proceedMoving, isCaptured } = this.captureChildPiece(children[0], targetSquare);
+
+      if (!proceedMoving) return;
+      // Move the piece
+      if (!isCaptured) {
+        // this.musicService.playKingInCheckSound();
+        this.musicService.playPieceMovedSound();
+      }
+      this.renderer.appendChild(targetSquare, this.selectedPiece);
       this.selectedSquare = event.target;
     }
   }
@@ -175,5 +209,21 @@ export class BoardComponent implements OnInit, AfterViewInit {
       return " ";
     }
     return this.getColumn(j);
+  }
+
+  getPieceNotation(symbol: string) {
+    return this.chessBrainService.getPieceNotation(symbol);
+  }
+
+  getPieceId(i:number, j: number) {
+    return this.getPieceNotation(this.getPiece(i, j));
+  }
+
+  getIsBlackPiece(i: number, j: number) {
+    return this
+      .chessBrainService
+      .getIsBlackPiece(
+        this.getPieceNotation(this.getPiece(i, j)),
+      );
   }
 }

@@ -1,12 +1,13 @@
 <div class="board">
     <div class="intro">
         <h2>Chess Bot</h2>
-        <p>This bot tries to imitate my brain. Try if you can beat it.</p>
+        <p>A bot that tries to use your browsers power to its advantage. Try if you can beat it.</p>
     </div>
     <div *ngFor="let r of createRange(); let i=index" class="row">
         <div
             *ngFor="let r of createRange(); let j = index"
             class="square"
+            id="{{i}}{{j}}"
             [ngStyle]="{ 'background-color': getCellColor(i, j) }"
             (dragover)="onDragOverSquare($event, 'hovered-square')"
             (dragenter)="onDragEnterSquare($event, 'hovered-square')"
@@ -18,6 +19,9 @@
                 draggable="true" 
                 (dragstart)="onDragStart($event, '', 'invisible-piece')"
                 (dragend)="onDragEnd($event, '', 'invisible-piece')"
+                id="{{ getPieceId(i, j) }}"
+                [ngClass]="getIsBlackPiece(i, j) ? 'black' : 'white'"
+                *ngIf="getPiece(i, j)"
             >
                 {{ getPiece(i, j) }}
             </div>
@@ -25,3 +29,22 @@
         </div>
     </div>
 </div>
+
+<div class="not-supported">
+    <div class="intro">
+        <h2>Chess Bot</h2>
+        <p>I think your screen is too small for comfort. Please try using a laptop to experience the game.</p>
+    </div>
+</div>
+
+<audio>
+    <source src="assets/audio/lower_tone.wav" type="">
+</audio>
+
+<audio>
+    <source src="assets/audio/higher_tone.wav" type="">
+</audio>
+
+<audio>
+    <source src="assets/audio/omae_wa_mo_shinde_iru_1.mp3" type="">
+</audio>
